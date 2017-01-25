@@ -22,6 +22,8 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 
+;;backups
+(setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
 ;;configure projectile
 (require 'projectile)
 (projectile-global-mode)
@@ -54,6 +56,9 @@
 (require 'magit)
 (global-set-key (kbd "C-x g") 'magit-status)
 (global-set-key (kbd "C-c g p") 'magit-pull)
+(global-set-key (kbd "C-c g o") 'magit-push)
+(global-set-key (kbd "C-c g c") 'magit-checkout)
+(global-set-key (kbd "C-c g b") 'magit-branch-and-checkout)
 ;; make status buffer open in current window
 (setq magit-display-buffer-function
       (lambda (buffer)
@@ -87,7 +92,6 @@
 (define-key company-active-map (kbd "C-n") 'company-select-next)
 (define-key company-active-map (kbd "C-p") 'company-select-previous)
 
-;;configure js2-mode
 (require 'js2-mode)
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 ;(custom-set-variables  
@@ -98,7 +102,12 @@
 
 ;;configure hs-minor-mode
 (load-library "hideshow")
-(global-set-key (kbd "C-+") 'hs-toggle-hiding)
+(global-set-key (kbd "C-T") 'hs-toggle-hiding)
+(global-set-key (kbd "C--") 'hs-hide-all)
+(global-set-key (kbd "C-+") 'hs-show-all)
+;(global-set-key (kbd "C-\S-h") 'hs-hide-block)
+;(global-set-key (kbd "C-\S-s") 'hs-show-block)
+
 (add-hook 'js2-mode-hook 'hs-minor-mode)
 
 ;;configure itern
@@ -110,12 +119,6 @@
 
 ;;configure for web-mode
 (require 'web-mode)
-(add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
-;;(setq web-mode-content-types-alist
-;;      '(("json" . "\\.api\\'")
-;;    ("xml"  . "\\.api\\'")
-;;    ("jsx"  . "\\.jsx\\'")))
-
 (setq web-mode-enable-auto-closing t)
 (setq web-mode-enable-auto-pairing t)
 
@@ -123,23 +126,28 @@
 (require 'org)
 (require 'org-trello)
 (require 'org-habit)
+(require 'ox-md)
+(setq org-refile-targets '((org-agenda-files . (:maxlevel . 6))))
+(global-set-key (kbd "C-c t")
+                (lambda() (interactive) (find-file "~/Me/org/gtd.org")))
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (define-key global-map "\C-cl" 'org-store-link)
 (define-key global-map "\C-ca" 'org-agenda)
 (define-key global-map "\C-cc" 'org-capture)
 (define-key global-map "\C-cb" 'org-iswitchb)
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "BLOCKED(b)" "SOMEDAY(s)" "|" "READ(r)" "DONE(d)" "CANCELLED(c)")))
 (setq org-capture-templates
-      '(("t" "Todo" entry (file+headline "~/Me/org/notes.org" "Tasks")
-	 "* TODO %?\n %i\n %a")
-	("j" "Journal" entry (file+datetree "~/Me/org/journal.org")
-	 "* %?\n Entered on %U\n %i\n %a")))
-    
-
-;;(setq org-todo-keyword-faces
-;;      (quote (("TODO" :foreground "red" :weight bold)
-;;              ("DONE" :foreground "forest green" :weight bold)
-;;              ("WAITING" :foreground "orange" :weight bold)
-;;              ("CANCELLED" :foreground "forest green" :weight bold))))
+      '(("W" "Wedding" entry (file+headline "~/Me/org/gtd.org" "Wedding")
+         "*** TODO %?")
+        ("f" "Finance" entry (file+headline "~/Me/org/gtd.org" "Finance")
+         "*** TODO %?")
+        ("s" "Study" entry (file+headline "~/Me/org/gtd.org" "Study")
+         "*** TODO %?")
+        ("v" "Violet" entry (file+headline "~/Me/org/gtd.org" "Violet")
+         "*** TODO %?")
+        ("w" "Work" entry (file+headline "~/Me/org/work.org" "Work")
+         "*** TODO %?\n %i\n %a")))
 
 ;;configure helm
 (require 'helm)
@@ -175,12 +183,19 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(exec-path
+   (quote
+    ("/usr/bin" "/bin" "/usr/sbin" "/sbin" "/Users/crawfoj0/Downloads/emacs-24.5/nextstep/Emacs.app/Contents/MacOS/libexec" "/Users/crawfoj0/Downloads/emacs-24.5/nextstep/Emacs.app/Contents/MacOS/bin" "/usr/local/bin" "/usr/local/bin" "/Library/TeX/texbin")))
  '(flycheck-eslintrc nil)
- '(initial-buffer-choice "~/Me/org/personal.org")
+ '(haskell-tags-on-save t)
+ '(indent-tabs-mode nil)
+ '(initial-buffer-choice "~/Me/org/gtd.org")
+ '(js-indent-level 2)
  '(js2-basic-offset 2)
  '(js2-bounce-indent-p t)
  '(json-reformat:indent-width 2)
- '(org-agenda-files (quote ("~/Me/org")))
+ '(jsx-indent-level 2)
+ '(org-agenda-files (quote ("~/Me/org/gtd.org" "~/Me/org/work.org")))
  '(org-capture-templates nil)
  '(org-default-notes-file "~/Me/org/notes.org")
  '(org-directory "~/Me/org")
@@ -189,7 +204,13 @@
  '(org-modules
    (quote
     (org-bbdb org-bibtex org-docview org-gnus org-habit org-info org-irc org-mhe org-rmail org-w3m)))
- '(org-trello-current-prefix-keybinding "C-c o" nil (org-trello)))
+ '(org-todo-keywords
+   (quote
+    ((sequence "TODO(t)" "BLOCKED(b)" "|" "DONE(d)" "CANCELLED(c)")
+     (sequence "TODO(t)" "IP(p)" "BLOCKED(b)" "|" "MERGING(m)" "DONE(d)" "CANCELLED(c)"))))
+ '(org-trello-current-prefix-keybinding "C-c o" nil (org-trello))
+ '(tab-width 2)
+ '(typescript-indent-level 2))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -201,3 +222,47 @@
 (add-to-list 'ac-sources 'ac-source-jedi-direct)
 (add-hook 'python-mode-hook 'jedi:setup)
 
+(put 'erase-buffer 'disabled nil)
+
+
+(global-set-key (kbd "C-c h -") (kbd "C-u - 1 6 C-x }"))
+(global-set-key (kbd "C-c h +") (kbd "C-u 1 6 C-x }"))
+
+(defun setup-tide-mode ()
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode +1)
+  ;; company is an optional dependency. You have to
+  ;; install it separately via package-install
+  ;; `M-x package-install [ret] company`
+  (company-mode +1))
+
+;; aligns annotation to the right hand side
+(setq company-tooltip-align-annotations t)
+
+;; formats the buffer before saving
+(add-hook 'before-save-hook 'tide-format-before-save)
+
+(add-hook 'typescript-mode-hook #'setup-tide-mode)
+
+;; format options
+(setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil))
+(windmove-default-keybindings)
+
+;; haskell
+(eval-after-load 'haskell-mode
+          '(define-key haskell-mode-map [f8] 'haskell-navigate-imports))
+(let ((my-cabal-path (expand-file-name "~/.cabal/bin")))
+  (setenv "PATH" (concat my-cabal-path path-separator (getenv "PATH")))
+  (add-to-list 'exec-path my-cabal-path))
+
+
+;; Install Intero
+(package-install 'intero)
+(add-hook 'haskell-mode-hook 'intero-mode)
+
+;; expand region
+(require 'expand-region)
+(global-set-key (kbd "C-=") 'er/expand-region)
