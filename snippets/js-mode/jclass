@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: javascript class
+# key: jclass
+# --
+"use strict";
+
+class $1 {
+$0
+}
+
+module.exports = $1

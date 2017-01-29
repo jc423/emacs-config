@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: typescript unit test
+# key: tut
+# --
+it("$1", () => {
+  $0               
+});

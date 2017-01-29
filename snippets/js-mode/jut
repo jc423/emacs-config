@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: javascript unit spec
+# key: jut
+# binding: direct-keybinding
+# --
+it("$1", () => {
+  $0
+});
